@@ -10,7 +10,7 @@ Frontend for the Al Yahya Restaurant site. This is currently an unmodified `crea
 
 ## Commands
 
-Run from the `frontend/` directory:
+Run from the project root:
 
 - `npm run dev` — start the dev server (http://localhost:3000)
 - `npm run build` — production build
