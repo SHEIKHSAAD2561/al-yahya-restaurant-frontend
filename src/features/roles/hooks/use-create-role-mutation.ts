@@ -14,7 +14,7 @@ export function useCreateRoleMutation() {
   return useMutation({
     mutationFn: rolesApi.create,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: rolesKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: rolesKeys.all });
       toast.success(t('created'));
     },
     onError: (error: ApiError) => toast.error(error.message),

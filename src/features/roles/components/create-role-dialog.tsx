@@ -13,6 +13,8 @@ import { useCreateRoleMutation } from '../hooks/use-create-role-mutation';
 const createRoleSchema = z.object({
   nameEn: z.string().min(1).max(100),
   nameAr: z.string().min(1).max(100),
+  descriptionEn: z.string().max(255).optional().or(z.literal('')),
+  descriptionAr: z.string().max(255).optional().or(z.literal('')),
 });
 type CreateRoleInput = z.infer<typeof createRoleSchema>;
 
@@ -33,16 +35,24 @@ export function CreateRoleDialog({ open, onOpenChange }: CreateRoleDialogProps) 
     formState: { errors },
   } = useForm<CreateRoleInput>({
     resolver: zodResolver(createRoleSchema),
-    defaultValues: { nameEn: '', nameAr: '' },
+    defaultValues: { nameEn: '', nameAr: '', descriptionEn: '', descriptionAr: '' },
   });
 
   function onSubmit(values: CreateRoleInput) {
-    createRoleMutation.mutate(values, {
-      onSuccess: () => {
-        onOpenChange(false);
-        reset();
+    createRoleMutation.mutate(
+      {
+        nameEn: values.nameEn,
+        nameAr: values.nameAr,
+        descriptionEn: values.descriptionEn || undefined,
+        descriptionAr: values.descriptionAr || undefined,
       },
-    });
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+          reset();
+        },
+      },
+    );
   }
 
   return (
@@ -61,6 +71,14 @@ export function CreateRoleDialog({ open, onOpenChange }: CreateRoleDialogProps) 
             <Label htmlFor="roleNameAr">{t('roleNameAr')}</Label>
             <Input id="roleNameAr" dir="rtl" {...register('nameAr')} />
             {errors.nameAr && <p className="text-sm text-red-600">{errors.nameAr.message}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="roleDescriptionEn">{t('roleDescriptionEn')}</Label>
+            <Input id="roleDescriptionEn" {...register('descriptionEn')} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="roleDescriptionAr">{t('roleDescriptionAr')}</Label>
+            <Input id="roleDescriptionAr" dir="rtl" {...register('descriptionAr')} />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

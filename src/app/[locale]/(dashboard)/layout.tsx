@@ -3,9 +3,12 @@ import { requireSession } from '@/core/auth/permissions';
 import { SessionProvider } from '@/core/permissions/session-context';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Topbar } from '@/components/layout/topbar';
+import { SessionExpiryWatcher } from '@/features/auth/components/session-expiry-watcher';
+import { getCompanyBranding } from '@/core/company/get-company-branding';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const session = await requireSession();
+  const branding = await getCompanyBranding();
 
   return (
     <SessionProvider
@@ -21,12 +24,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       }}
     >
       <div className="flex min-h-screen">
-        <Sidebar />
+        <Sidebar logoUrl={branding?.logoUrl} />
         <div className="flex flex-1 flex-col">
           <Topbar />
           <main className="flex flex-1 flex-col bg-zinc-50 p-6">{children}</main>
         </div>
       </div>
+      {session.exp && <SessionExpiryWatcher expiresAtSeconds={session.exp} />}
     </SessionProvider>
   );
 }

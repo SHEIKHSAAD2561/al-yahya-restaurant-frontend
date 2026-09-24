@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useUsersQuery } from '@/features/users/hooks/use-users-query';
+import { ROLE_TYPES } from '@/core/auth/role-type';
 import { useAssignRoleMutation } from '../hooks/use-assign-role-mutation';
 import type { Role } from '../types/role';
 
@@ -27,9 +28,14 @@ export function AssignRoleDialog({ role, open, onOpenChange }: AssignRoleDialogP
   const usersQuery = useUsersQuery({}, { enabled: open });
   const assignRoleMutation = useAssignRoleMutation();
 
-  // Users who don't already have this role — nothing to "assign" otherwise.
+  // Users who don't already have this role, and never the Super Admin
+  // account — its role can't be reassigned (the backend rejects it too, this
+  // just avoids offering a dead-end action).
   const candidates = useMemo(
-    () => (usersQuery.data ?? []).filter((user) => user.roleId !== role.id),
+    () =>
+      (usersQuery.data ?? []).filter(
+        (user) => user.roleId !== role.id && user.role.type !== ROLE_TYPES.SUPER_ADMIN,
+      ),
     [usersQuery.data, role.id],
   );
 

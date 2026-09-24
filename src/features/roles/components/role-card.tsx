@@ -67,6 +67,7 @@ export function RoleCard({ role, canDelete, onView, onDelete }: RoleCardProps) {
         </div>
       </div>
       <p className="mt-4 text-sm font-semibold text-zinc-900">{role.name}</p>
+      {role.description && <p className="mt-1 text-sm text-zinc-500">{role.description}</p>}
     </div>
   );
 }

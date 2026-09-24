@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UserStatusBadge } from './user-status-badge';
 import { useUpdateUserStatusMutation } from '../hooks/use-update-user-status-mutation';
 import { USER_STATUSES, type User } from '../types/user';
+import { ROLE_TYPES } from '@/core/auth/role-type';
 
 interface UserListTableProps {
   users: User[];
@@ -108,7 +109,7 @@ export function UserListTable({ users, isLoading, onEdit, canManage }: UserListT
                       <Pencil className="size-4" />
                       {tCommon('edit')}
                     </DropdownMenu.Item>
-                    {user.status === USER_STATUSES.ACTIVE && (
+                    {user.role.type !== ROLE_TYPES.SUPER_ADMIN && user.status === USER_STATUSES.ACTIVE && (
                       <DropdownMenu.Item
                         onSelect={() =>
                           updateStatusMutation.mutate({
@@ -121,7 +122,7 @@ export function UserListTable({ users, isLoading, onEdit, canManage }: UserListT
                         {t('deactivate')}
                       </DropdownMenu.Item>
                     )}
-                    {user.status === USER_STATUSES.INACTIVE && (
+                    {user.role.type !== ROLE_TYPES.SUPER_ADMIN && user.status === USER_STATUSES.INACTIVE && (
                       <DropdownMenu.Item
                         onSelect={() =>
                           updateStatusMutation.mutate({

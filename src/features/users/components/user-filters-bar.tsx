@@ -45,7 +45,9 @@ export function UserFiltersBar({ filters, onChange, roles }: UserFiltersBarProps
         }
       >
         <SelectTrigger className="w-48">
-          <SelectValue placeholder={t('allRoles')} />
+          <SelectValue placeholder={t('allRoles')}>
+            {filters.roleId ? roles.find((role) => role.id === filters.roleId)?.name : t('allRoles')}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL}>{t('allRoles')}</SelectItem>
@@ -64,7 +66,9 @@ export function UserFiltersBar({ filters, onChange, roles }: UserFiltersBarProps
         }
       >
         <SelectTrigger className="w-40">
-          <SelectValue placeholder={t('allStatuses')} />
+          <SelectValue placeholder={t('allStatuses')}>
+            {filters.status ? tCommon(filters.status.toLowerCase() as 'active' | 'pending' | 'inactive') : t('allStatuses')}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL}>{t('allStatuses')}</SelectItem>

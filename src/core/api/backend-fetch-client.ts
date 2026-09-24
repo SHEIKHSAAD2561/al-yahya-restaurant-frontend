@@ -20,6 +20,7 @@ function getClientLocale(): string {
  */
 export async function backendFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', body, searchParams } = options;
+  const isFormData = body instanceof FormData;
 
   const query = searchParams
     ? `?${new URLSearchParams(
@@ -33,10 +34,12 @@ export async function backendFetch<T>(path: string, options: RequestOptions = {}
   const response = await fetch(`/api/backend/${path}${query}`, {
     method,
     headers: {
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
+      // Never set Content-Type for FormData — the browser needs to add its
+      // own multipart boundary, which a manual header would override.
+      ...(body !== undefined && !isFormData ? { 'Content-Type': 'application/json' } : {}),
       'x-locale': getClientLocale(),
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
   });
 
   if (response.status === 204) {

@@ -19,20 +19,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(loginResult.body, { status: loginResult.status });
   }
 
-  const { accessToken, refreshToken } = loginResult.body as {
+  const { accessToken, refreshToken, refreshTokenExpiresAt } = loginResult.body as {
     accessToken: string;
     refreshToken: string;
+    refreshTokenExpiresAt: string;
   };
 
-  const sessionToken = await mintSessionToken(accessToken, locale);
-  if (!sessionToken) {
+  const minted = await mintSessionToken(accessToken, refreshTokenExpiresAt, locale);
+  if (!minted) {
     return NextResponse.json({ message: 'Could not load your profile.' }, { status: 502 });
   }
 
   const cookieStore = await cookies();
   cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, tokenCookieOptions());
   cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, tokenCookieOptions());
-  cookieStore.set(SESSION_COOKIE, sessionToken, sessionCookieOptions());
+  cookieStore.set(SESSION_COOKIE, minted.token, sessionCookieOptions(minted.exp));
 
   return NextResponse.json({ ok: true });
 }

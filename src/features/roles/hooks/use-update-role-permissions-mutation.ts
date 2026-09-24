@@ -15,7 +15,7 @@ export function useUpdateRolePermissionsMutation() {
     mutationFn: ({ id, permissionCodes }: { id: string; permissionCodes: string[] }) =>
       rolesApi.updatePermissions(id, { permissionCodes }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: rolesKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: rolesKeys.all });
       toast.success(t('permissionsUpdated'));
     },
     onError: (error: ApiError) => toast.error(error.message),

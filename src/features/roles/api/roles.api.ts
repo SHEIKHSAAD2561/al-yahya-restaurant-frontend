@@ -4,6 +4,8 @@ import type { Role } from '../types/role';
 export interface CreateRoleInput {
   nameEn: string;
   nameAr: string;
+  descriptionEn?: string;
+  descriptionAr?: string;
 }
 
 export interface UpdateRolePermissionsInput {

@@ -3,8 +3,8 @@ import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
 import { ComingSoon } from '@/components/layout/coming-soon';
 
-export default async function PurchasesSuppliersPage() {
-  await requirePermission(PERMISSIONS.PURCHASES_SUPPLIERS_ACCESS);
+export default async function SaleSettingsPage() {
+  await requirePermission(PERMISSIONS.POS_MANAGE_SALE_SETTINGS);
   const t = await getTranslations('nav');
-  return <ComingSoon title={t('purchasesSuppliers')} />;
+  return <ComingSoon title={t('saleSettings')} />;
 }

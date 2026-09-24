@@ -6,13 +6,18 @@ import { LANGUAGES } from '../types/user';
  * (email is just disabled, not omitted, when editing). The email/roleId split
  * between the backend's CreateUserDto/UpdateUserDto only matters at the API
  * payload boundary (see users.api.ts), not in form state.
+ *
+ * Phone is split into country code + national number for entry (defaulting
+ * to +966), then joined into the one `phone` string the backend stores —
+ * see joinPhoneNumber()/splitPhoneNumber() in core/phone/country-codes.ts.
  */
 export const userFormSchema = z
   .object({
     nameEn: z.string().min(1).max(150),
     nameAr: z.string().min(1).max(150),
     email: z.string().email(),
-    phone: z.string().max(30).optional().or(z.literal('')),
+    phoneCountryCode: z.string().min(1),
+    phoneNumber: z.string().max(20).optional().or(z.literal('')),
     roleId: z.string().uuid({ message: 'Select a role.' }),
     allLocations: z.boolean(),
     locationIds: z.array(z.string().uuid()),

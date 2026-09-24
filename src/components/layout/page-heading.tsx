@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { usePathname } from '@/core/i18n/navigation';
-import { NAV_ITEMS, SETTINGS_TABS } from '@/core/nav/nav-config';
+import { NAV_LEAVES, SETTINGS_TABS } from '@/core/nav/nav-config';
 
 export function PageHeading() {
   const pathname = usePathname();
@@ -21,7 +21,7 @@ export function PageHeading() {
     );
   }
 
-  const navItem = NAV_ITEMS.find(
+  const navItem = NAV_LEAVES.find(
     (item) => pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)),
   );
   if (navItem) {

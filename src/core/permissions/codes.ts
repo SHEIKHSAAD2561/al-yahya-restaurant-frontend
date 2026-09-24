@@ -10,6 +10,10 @@ export const PERMISSIONS = {
   POS_EDIT_PRICES_DISCOUNTS: 'pos.edit_prices_discounts',
   POS_SELL_WHOLESALE: 'pos.sell_wholesale',
   POS_CHECKOUT_POST_PAYMENT: 'pos.checkout_post_payment',
+  POS_MANAGE_DIGITAL_MENU: 'pos.manage_digital_menu',
+  POS_VIEW_SALE_INVOICES: 'pos.view_sale_invoices',
+  POS_MANAGE_PROMOTIONS: 'pos.manage_promotions',
+  POS_MANAGE_SALE_SETTINGS: 'pos.manage_sale_settings',
 
   CUSTOMERS_ACCESS: 'customers.access',
   CUSTOMERS_CREATE: 'customers.create',
@@ -29,6 +33,8 @@ export const PERMISSIONS = {
   PRODUCTS_VIEW_COST: 'products.view_cost',
   PRODUCTS_EXPORT: 'products.export',
   PRODUCTS_PRINT_BARCODE: 'products.print_barcode',
+  PRODUCTS_MANAGE_CATEGORIES: 'products.manage_categories',
+  PRODUCTS_MANAGE_MODIFIERS: 'products.manage_modifiers',
 
   STOCK_ACCESS: 'stock.access',
   STOCK_RECORD_DRAFT: 'stock.record_draft',
@@ -52,6 +58,8 @@ export const PERMISSIONS = {
   EXPENSES_MANAGE_WALLET: 'expenses.manage_wallet',
 
   ACCOUNTING_ACCESS: 'accounting.access',
+  ACCOUNTING_VIEW_SETUP_GUIDE: 'accounting.view_setup_guide',
+  ACCOUNTING_MANAGE_FIXED_ASSETS: 'accounting.manage_fixed_assets',
   ACCOUNTING_MANAGE_CHART_OF_ACCOUNTS: 'accounting.manage_chart_of_accounts',
   ACCOUNTING_RECORD_JOURNAL_ENTRIES: 'accounting.record_journal_entries',
   ACCOUNTING_MANAGE_JOURNAL_ENTRIES: 'accounting.manage_journal_entries',

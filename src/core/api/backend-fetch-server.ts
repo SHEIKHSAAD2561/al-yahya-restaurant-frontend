@@ -8,6 +8,9 @@ export interface BackendResponse {
 
 interface CallBackendOptions {
   method?: string;
+  /** A plain object gets JSON-encoded; a `FormData` (file uploads) is passed
+   * through as-is — `fetch` sets its own multipart boundary header for that
+   * case, so `Content-Type` must NOT be set manually when it's FormData. */
   body?: unknown;
   accessToken?: string;
   locale?: string;
@@ -20,16 +23,18 @@ export async function callBackend(
   path: string,
   { method = 'GET', body, accessToken, locale }: CallBackendOptions = {},
 ): Promise<BackendResponse> {
+  const isFormData = body instanceof FormData;
+
   let response: Response;
   try {
     response = await fetch(`${env.backendUrl}/${path}`, {
       method,
       headers: {
-        ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+        ...(body !== undefined && !isFormData ? { 'Content-Type': 'application/json' } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         ...(locale ? { 'x-lang': locale } : {}),
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
       cache: 'no-store',
     });
   } catch {

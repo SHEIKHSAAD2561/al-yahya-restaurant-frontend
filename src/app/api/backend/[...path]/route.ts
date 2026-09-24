@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { callBackend } from '@/core/api/backend-fetch-server';
-import { mintSessionToken } from '@/core/auth/mint-session';
-import {
-  ACCESS_TOKEN_COOKIE,
-  REFRESH_TOKEN_COOKIE,
-  SESSION_COOKIE,
-  tokenCookieOptions,
-  sessionCookieOptions,
-  expiredCookieOptions,
-} from '@/core/auth/cookies';
+import { refreshSession } from '@/core/auth/refresh-session';
+import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '@/core/auth/cookies';
 
 interface RouteContext {
   params: Promise<{ path: string[] }>;
@@ -30,10 +23,13 @@ async function handle(request: NextRequest, { params }: RouteContext): Promise<N
   const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
+  const isMultipart = (request.headers.get('content-type') ?? '').includes('multipart/form-data');
   const body =
     request.method === 'GET' || request.method === 'DELETE'
       ? undefined
-      : await request.json().catch(() => undefined);
+      : isMultipart
+        ? await request.formData().catch(() => undefined)
+        : await request.json().catch(() => undefined);
 
   const result = await callBackend(targetPath, { method: request.method, body, accessToken, locale });
 
@@ -45,37 +41,16 @@ async function handle(request: NextRequest, { params }: RouteContext): Promise<N
     return NextResponse.json(result.body, { status: 401 });
   }
 
-  const refreshResult = await callBackend('auth/refresh', {
-    method: 'POST',
-    body: { refreshToken },
-    locale,
-  });
-
-  if (refreshResult.status < 200 || refreshResult.status >= 300) {
-    cookieStore.set(ACCESS_TOKEN_COOKIE, '', expiredCookieOptions());
-    cookieStore.set(REFRESH_TOKEN_COOKIE, '', expiredCookieOptions());
-    cookieStore.set(SESSION_COOKIE, '', expiredCookieOptions());
+  const refreshed = await refreshSession(refreshToken, locale);
+  if (!refreshed.ok) {
     return NextResponse.json({ message: 'Session expired' }, { status: 401 });
   }
 
-  const newTokens = refreshResult.body as { accessToken: string; refreshToken: string };
-  const sessionToken = await mintSessionToken(newTokens.accessToken, locale);
-
-  if (!sessionToken) {
-    cookieStore.set(ACCESS_TOKEN_COOKIE, '', expiredCookieOptions());
-    cookieStore.set(REFRESH_TOKEN_COOKIE, '', expiredCookieOptions());
-    cookieStore.set(SESSION_COOKIE, '', expiredCookieOptions());
-    return NextResponse.json({ message: 'Session expired' }, { status: 401 });
-  }
-
-  cookieStore.set(ACCESS_TOKEN_COOKIE, newTokens.accessToken, tokenCookieOptions());
-  cookieStore.set(REFRESH_TOKEN_COOKIE, newTokens.refreshToken, tokenCookieOptions());
-  cookieStore.set(SESSION_COOKIE, sessionToken, sessionCookieOptions());
-
+  const newAccessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value ?? '';
   const retryResult = await callBackend(targetPath, {
     method: request.method,
     body,
-    accessToken: newTokens.accessToken,
+    accessToken: newAccessToken,
     locale,
   });
 

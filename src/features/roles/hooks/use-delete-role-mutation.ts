@@ -14,7 +14,7 @@ export function useDeleteRoleMutation() {
   return useMutation({
     mutationFn: rolesApi.remove,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: rolesKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: rolesKeys.all });
       toast.success(t('deleted'));
     },
     onError: (error: ApiError) => toast.error(error.message),

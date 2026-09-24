@@ -2,10 +2,12 @@ import type { ReactNode } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { BrandMark } from '@/components/layout/brand-mark';
 import { LocaleSwitcher } from '@/components/layout/locale-switcher';
+import { getCompanyBranding } from '@/core/company/get-company-branding';
 
 export default async function AuthLayout({ children }: { children: ReactNode }) {
   const tCommon = await getTranslations('common');
   const tAuth = await getTranslations('auth');
+  const branding = await getCompanyBranding();
 
   return (
     <div className="flex min-h-screen">
@@ -18,7 +20,7 @@ export default async function AuthLayout({ children }: { children: ReactNode }) 
           }}
         />
         <div className="relative flex items-center gap-3">
-          <BrandMark />
+          <BrandMark logoUrl={branding?.logoUrl} />
           <span className="text-lg font-semibold">{tCommon('appName')}</span>
         </div>
         <div className="relative max-w-md space-y-4">
@@ -36,7 +38,7 @@ export default async function AuthLayout({ children }: { children: ReactNode }) 
         </div>
         <div className="w-full max-w-sm">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <BrandMark />
+            <BrandMark logoUrl={branding?.logoUrl} />
             <span className="text-lg font-semibold text-foreground">{tCommon('appName')}</span>
           </div>
           <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">{children}</div>

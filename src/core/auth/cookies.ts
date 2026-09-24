@@ -9,10 +9,6 @@ export const SESSION_COOKIE = 'session';
  * see the silent-refresh logic in `app/api/backend/[...path]/route.ts`. */
 const TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
-/** Re-signed on every login/refresh; short-lived so a revoked/edited role can't
- * stay effective in the UI for long. */
-export const SESSION_MAX_AGE_SECONDS = 60 * 15; // 15 minutes
-
 interface CookieOptions {
   httpOnly: boolean;
   secure: boolean;
@@ -32,8 +28,14 @@ export function tokenCookieOptions(): CookieOptions {
   return { ...baseCookieOptions, maxAge: TOKEN_MAX_AGE_SECONDS };
 }
 
-export function sessionCookieOptions(): CookieOptions {
-  return { ...baseCookieOptions, maxAge: SESSION_MAX_AGE_SECONDS };
+/** `expiresAtSeconds` is the same absolute timestamp signed into the session
+ * JWT itself (see `mint-session.ts`) — the cookie's browser-level `maxAge`
+ * and the token's own `exp` claim always agree because they come from the
+ * same source (the backend access token's real expiry), never a separately
+ * configured duration. */
+export function sessionCookieOptions(expiresAtSeconds: number): CookieOptions {
+  const maxAge = Math.max(expiresAtSeconds - Math.floor(Date.now() / 1000), 0);
+  return { ...baseCookieOptions, maxAge };
 }
 
 export function expiredCookieOptions(): CookieOptions {
