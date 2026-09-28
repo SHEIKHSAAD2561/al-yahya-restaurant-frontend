@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
-import { requirePermission } from '@/core/auth/permissions';
+import { requireAnyPermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { JournalEntriesPage } from '@/features/journal-entries/components/journal-entries-page';
 
-export default async function JournalEntriesPage() {
-  await requirePermission(PERMISSIONS.ACCOUNTING_RECORD_JOURNAL_ENTRIES);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('journalEntries')} />;
+export default async function JournalEntriesRoutePage() {
+  await requireAnyPermission(PERMISSIONS.ACCOUNTING_RECORD_JOURNAL_ENTRIES, PERMISSIONS.ACCOUNTING_MANAGE_JOURNAL_ENTRIES);
+  return <JournalEntriesPage />;
 }

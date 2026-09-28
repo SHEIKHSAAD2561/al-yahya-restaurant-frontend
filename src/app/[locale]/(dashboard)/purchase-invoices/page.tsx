@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { PurchaseInvoicesPage } from '@/features/purchase-invoices/components/purchase-invoices-page';
 
-export default async function PurchaseInvoicesPage() {
-  await requirePermission(PERMISSIONS.PURCHASES_SUPPLIERS_MANAGE_INVOICES);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('purchaseInvoices')} />;
+export default async function PurchaseInvoicesRoutePage() {
+  await requirePermission(PERMISSIONS.PURCHASES_SUPPLIERS_ACCESS);
+  return <PurchaseInvoicesPage />;
 }

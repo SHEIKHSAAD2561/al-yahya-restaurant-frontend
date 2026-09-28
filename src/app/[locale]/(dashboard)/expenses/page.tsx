@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ExpensesPage } from '@/features/expenses/components/expenses-page';
 
-export default async function ExpensesPage() {
+export default async function ExpensesRoutePage() {
   await requirePermission(PERMISSIONS.EXPENSES_ACCESS);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('expenses')} />;
+  return <ExpensesPage />;
 }

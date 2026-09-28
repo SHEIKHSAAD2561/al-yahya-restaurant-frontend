@@ -1,11 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { callBackend } from '@/core/api/backend-fetch-server';
+import { callBackend, type BackendResponse } from '@/core/api/backend-fetch-server';
 import { refreshSession } from '@/core/auth/refresh-session';
 import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from '@/core/auth/cookies';
 
 interface RouteContext {
   params: Promise<{ path: string[] }>;
+}
+
+/** JSON-wraps a JSON body as before; a non-JSON body (e.g. a CSV export) is
+ * passed through as-is, with the backend's real Content-Type and, for a file
+ * download, its Content-Disposition — not re-encoded as a JSON string. */
+function toResponse(result: BackendResponse): NextResponse {
+  if (result.contentType === 'application/json') {
+    return NextResponse.json(result.body, { status: result.status });
+  }
+  return new NextResponse(result.body as string, {
+    status: result.status,
+    headers: {
+      'Content-Type': result.contentType,
+      ...(result.contentDisposition ? { 'Content-Disposition': result.contentDisposition } : {}),
+    },
+  });
 }
 
 /**
@@ -34,11 +50,11 @@ async function handle(request: NextRequest, { params }: RouteContext): Promise<N
   const result = await callBackend(targetPath, { method: request.method, body, accessToken, locale });
 
   if (result.status !== 401) {
-    return NextResponse.json(result.body, { status: result.status });
+    return toResponse(result);
   }
 
   if (!refreshToken) {
-    return NextResponse.json(result.body, { status: 401 });
+    return toResponse(result);
   }
 
   const refreshed = await refreshSession(refreshToken, locale);
@@ -54,7 +70,7 @@ async function handle(request: NextRequest, { params }: RouteContext): Promise<N
     locale,
   });
 
-  return NextResponse.json(retryResult.body, { status: retryResult.status });
+  return toResponse(retryResult);
 }
 
 export { handle as GET, handle as POST, handle as PATCH, handle as PUT, handle as DELETE };

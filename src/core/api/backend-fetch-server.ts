@@ -4,6 +4,13 @@ import { env } from '@/core/config/env';
 export interface BackendResponse {
   status: number;
   body: unknown;
+  /** The backend's real Content-Type — 'application/json' unless the route
+   * returns a file (e.g. a CSV export). The catch-all proxy uses this to
+   * decide whether to JSON-wrap `body` or pass it through as-is. */
+  contentType: string;
+  /** Forwarded only for a file download (Content-Disposition), so the
+   * browser's Save dialog gets the backend's filename. */
+  contentDisposition?: string;
 }
 
 interface CallBackendOptions {
@@ -40,13 +47,23 @@ export async function callBackend(
   } catch {
     // Backend unreachable (down, wrong BACKEND_URL, network blip) — degrade to
     // a normal error response instead of crashing the calling Route Handler.
-    return { status: 503, body: { message: 'The server is temporarily unavailable.' } };
+    return {
+      status: 503,
+      body: { message: 'The server is temporarily unavailable.' },
+      contentType: 'application/json',
+    };
   }
 
   const contentType = response.headers.get('content-type') ?? '';
-  const responseBody = contentType.includes('application/json')
+  const isJson = contentType.includes('application/json');
+  const responseBody = isJson
     ? await response.json().catch(() => null)
     : await response.text().catch(() => null);
 
-  return { status: response.status, body: responseBody };
+  return {
+    status: response.status,
+    body: responseBody,
+    contentType: isJson ? 'application/json' : contentType || 'text/plain',
+    contentDisposition: response.headers.get('content-disposition') ?? undefined,
+  };
 }

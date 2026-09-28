@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { SetupGuidePage } from '@/features/accounting-overview/components/setup-guide-page';
 
-export default async function SetupGuidePage() {
+export default async function SetupGuideRoutePage() {
   await requirePermission(PERMISSIONS.ACCOUNTING_VIEW_SETUP_GUIDE);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('setupGuide')} />;
+  return <SetupGuidePage />;
 }

@@ -77,3 +77,25 @@ body {
     transform: scale(0.98) translateY(4px);
   }
 }
+
+/* Classic "print only this element" trick, shared by every receipt print
+ * call site (Pay dialog, Sale Detail dialog, Sale Invoices list, Cash
+ * Management's Print Report): give the printable node `.receipt-print-area`
+ * and everything else on the page is hidden for that one `window.print()`
+ * call, instead of printing the whole app shell (sidebar, topbar, dialog
+ * chrome) along with it. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .receipt-print-area,
+  .receipt-print-area * {
+    visibility: visible;
+  }
+  .receipt-print-area {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    width: 100%;
+  }
+}

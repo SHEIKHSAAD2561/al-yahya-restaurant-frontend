@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { SaleSettingsPage } from '@/features/sale-settings/components/sale-settings-page';
 
-export default async function SaleSettingsPage() {
+export default async function SaleSettingsRoutePage() {
   await requirePermission(PERMISSIONS.POS_MANAGE_SALE_SETTINGS);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('saleSettings')} />;
+  return <SaleSettingsPage />;
 }

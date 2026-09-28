@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { locationsApi, type UpdateLocationInput } from '../api/locations.api';
 import { locationsKeys } from '../api/locations.query-keys';
+import { configurationKeys } from '@/features/configuration/api/configuration.query-keys';
 import type { ApiError } from '@/core/api/http-error';
 
 export function useUpdateLocationMutation() {
@@ -16,6 +17,7 @@ export function useUpdateLocationMutation() {
       locationsApi.update(id, input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: locationsKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: configurationKeys.all });
       toast.success(t('updated'));
     },
     onError: (error: ApiError) => toast.error(error.message),

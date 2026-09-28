@@ -8,7 +8,14 @@ import { SETTINGS_TABS } from '@/core/nav/nav-config';
 
 const intlMiddleware = createMiddleware(routing);
 
-const PUBLIC_PATHS = ['/login', '/accept-invitation', '/forgot-password'];
+// Auth screens: redirect away to "/" if the visitor already has a session
+// (no reason to show the login form to someone already signed in).
+const AUTH_ONLY_PUBLIC_PATHS = ['/login', '/accept-invitation', '/forgot-password'];
+// Genuinely public content: no session required, and — unlike the auth
+// screens above — a signed-in staff member should still be able to view it
+// normally (e.g. a manager checking the Digital Menu customers see), so
+// these never redirect based on session state.
+const PUBLIC_PATHS = ['/menu'];
 
 function stripLocale(pathname: string): string {
   const segments = pathname.split('/');
@@ -46,15 +53,20 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   const pathname = stripLocale(request.nextUrl.pathname);
   const locale = localeFromPathname(request.nextUrl.pathname);
+  const isAuthOnlyPublicPath = AUTH_ONLY_PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   const isPublicPath = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
   const session = sessionToken ? await verifySession(sessionToken) : null;
 
-  if (isPublicPath) {
+  if (isAuthOnlyPublicPath) {
     if (session) {
       return NextResponse.redirect(new URL(`/${locale}`, request.url));
     }
+    return intlResponse;
+  }
+
+  if (isPublicPath) {
     return intlResponse;
   }
 

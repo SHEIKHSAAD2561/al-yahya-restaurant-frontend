@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ReportsPage } from '@/features/reports/components/reports-page';
 
-export default async function ReportsPage() {
+export default async function ReportsRoutePage() {
   await requirePermission(PERMISSIONS.REPORTS_ACCESS);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('reports')} />;
+  return <ReportsPage />;
 }

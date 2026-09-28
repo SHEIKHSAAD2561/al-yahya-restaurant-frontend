@@ -24,6 +24,7 @@ import {
   Landmark,
   NotebookPen,
   ListTree,
+  TrendingUp,
   BarChart3,
   Settings,
   type LucideIcon,
@@ -252,6 +253,13 @@ export const NAV_ENTRIES: NavEntry[] = [
         icon: ListTree,
         permission: PERMISSIONS.ACCOUNTING_MANAGE_CHART_OF_ACCOUNTS,
       },
+      {
+        type: 'link',
+        href: '/financial-reports',
+        labelKey: 'financialReports',
+        icon: TrendingUp,
+        permission: PERMISSIONS.ACCOUNTING_VIEW_FINANCIAL_REPORTS,
+      },
     ],
   },
   {
@@ -290,4 +298,14 @@ export const SETTINGS_TABS = [
     permission: PERMISSIONS.SETTINGS_LOCATIONS_MANAGE,
   },
   { href: '/settings/taxes', labelKey: 'taxes', permission: PERMISSIONS.SETTINGS_FINANCIAL_SETTINGS },
+  {
+    href: '/settings/configuration',
+    labelKey: 'configuration',
+    permission: PERMISSIONS.SETTINGS_FINANCIAL_SETTINGS,
+  },
+  {
+    href: '/settings/payment-methods',
+    labelKey: 'paymentMethods',
+    permission: PERMISSIONS.SETTINGS_FINANCIAL_SETTINGS,
+  },
 ] as const;

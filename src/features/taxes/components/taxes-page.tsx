@@ -1,28 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Pencil,
-  Percent,
-  Plus,
-} from 'lucide-react';
+import { Pencil, Percent, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from '@/components/ui/table';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { TablePagination } from '@/components/ui/table-pagination';
 import { Link } from '@/core/i18n/navigation';
 import { useTaxesQuery } from '../hooks/use-taxes-query';
 import { ToggleTaxStatusDialog } from './toggle-tax-status-dialog';
 import { TAX_TYPES } from '../types/tax-type';
 import type { Tax } from '../types/tax';
-
-const PAGE_SIZE_OPTIONS = ['10', '25', '50'];
 
 function formatRate(tax: Tax): string {
   const parts = tax.lines
@@ -51,10 +41,6 @@ export function TaxesPage() {
   const pageCount = Math.max(1, Math.ceil(taxes.length / size));
   const currentPage = Math.min(page, pageCount - 1);
   const pageTaxes = taxes.slice(currentPage * size, currentPage * size + size);
-
-  function goToPage(next: number) {
-    setPage(Math.min(Math.max(next, 0), pageCount - 1));
-  }
 
   return (
     <div className="space-y-4">
@@ -143,67 +129,17 @@ export function TaxesPage() {
             </TableBody>
           </Table>
 
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-2 text-sm text-zinc-500">
-              <span>{t('noOfResults')}</span>
-              <Select
-                value={pageSize}
-                onValueChange={(value) => {
-                  setPageSize(value);
-                  setPage(0);
-                }}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue>{pageSize}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {PAGE_SIZE_OPTIONS.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => goToPage(0)}
-                disabled={currentPage === 0}
-                className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 disabled:opacity-40"
-              >
-                <ChevronsLeft className="size-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 0}
-                className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 disabled:opacity-40"
-              >
-                <ChevronLeft className="size-4" />
-              </button>
-              <span className="flex size-7 items-center justify-center rounded-full bg-brand-muted text-sm font-medium text-brand">
-                {currentPage + 1}
-              </span>
-              <button
-                type="button"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage >= pageCount - 1}
-                className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 disabled:opacity-40"
-              >
-                <ChevronRight className="size-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => goToPage(pageCount - 1)}
-                disabled={currentPage >= pageCount - 1}
-                className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 disabled:opacity-40"
-              >
-                <ChevronsRight className="size-4" />
-              </button>
-            </div>
-          </div>
+          <TablePagination
+            page={currentPage}
+            pageCount={pageCount}
+            onPageChange={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={(value) => {
+              setPageSize(value);
+              setPage(0);
+            }}
+            pageSizeLabel={t('noOfResults')}
+          />
         </>
       )}
 

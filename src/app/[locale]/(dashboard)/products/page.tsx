@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ProductsPage } from '@/features/products/components/products-page';
 
-export default async function ProductsPage() {
+export default async function ProductsRoutePage() {
   await requirePermission(PERMISSIONS.PRODUCTS_ACCESS);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('products')} />;
+  return <ProductsPage />;
 }

@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { SaleInvoicesPage } from '@/features/sales/components/sale-invoices-page';
 
-export default async function SaleInvoicesPage() {
+export default async function SaleInvoicesRoutePage() {
   await requirePermission(PERMISSIONS.POS_VIEW_SALE_INVOICES);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('saleInvoices')} />;
+  return <SaleInvoicesPage />;
 }

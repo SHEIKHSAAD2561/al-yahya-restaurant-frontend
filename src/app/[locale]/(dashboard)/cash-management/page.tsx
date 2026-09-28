@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { CashManagementPage } from '@/features/cash-management/components/cash-management-page';
 
-export default async function CashManagementPage() {
+export default async function CashManagementRoutePage() {
   await requirePermission(PERMISSIONS.POS_MANAGE_CASH);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('cashManagement')} />;
+  return <CashManagementPage />;
 }

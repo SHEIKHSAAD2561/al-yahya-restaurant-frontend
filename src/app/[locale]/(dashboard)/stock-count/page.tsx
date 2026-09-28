@@ -1,10 +1,8 @@
-import { getTranslations } from 'next-intl/server';
 import { requirePermission } from '@/core/auth/permissions';
 import { PERMISSIONS } from '@/core/permissions/codes';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { StockCountsPage } from '@/features/stock-count/components/stock-counts-page';
 
-export default async function StockCountPage() {
-  await requirePermission(PERMISSIONS.STOCK_MANAGE_COUNTS);
-  const t = await getTranslations('nav');
-  return <ComingSoon title={t('stockCount')} />;
+export default async function StockCountRoutePage() {
+  await requirePermission(PERMISSIONS.STOCK_ACCESS);
+  return <StockCountsPage />;
 }

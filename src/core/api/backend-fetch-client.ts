@@ -8,7 +8,7 @@ interface RequestOptions {
   searchParams?: Record<string, string | undefined>;
 }
 
-function getClientLocale(): string {
+export function getClientLocale(): string {
   return typeof document !== 'undefined' ? document.documentElement.lang || 'en' : 'en';
 }
 
@@ -55,4 +55,32 @@ export async function backendFetch<T>(path: string, options: RequestOptions = {}
   }
 
   return data as T;
+}
+
+/**
+ * For endpoints that return a downloadable file (e.g. a CSV export) instead
+ * of JSON — the catch-all proxy passes those straight through with their
+ * real content type (see backend-fetch-server.ts / app/api/backend/[...path]).
+ * Not built on top of `backendFetch`, since that always parses the body as JSON.
+ */
+export async function backendDownload(
+  path: string,
+  searchParams: Record<string, string | undefined> = {},
+): Promise<Blob> {
+  const query = new URLSearchParams(
+    Object.entries(searchParams).filter(([, value]) => value !== undefined) as [string, string][],
+  ).toString();
+
+  const response = await fetch(`/api/backend/${path}${query ? `?${query}` : ''}`, {
+    headers: { 'x-locale': getClientLocale() },
+  });
+
+  if (!response.ok) {
+    const data: unknown = await response.json().catch(() => null);
+    const raw = (data as { message?: string | string[] } | null)?.message;
+    const message = Array.isArray(raw) ? raw.join(', ') : (raw ?? 'Request failed');
+    throw new ApiError(message, response.status);
+  }
+
+  return response.blob();
 }
